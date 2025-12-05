@@ -1,25 +1,28 @@
+import streamlit as st
+import streamlit.components.v1 as components
+
+# Configura la pagina Streamlit per usare tutto lo schermo
+st.set_page_config(layout="wide", page_title="KPI Dashboard")
+
+# Inseriamo tutto il tuo codice HTML dentro una variabile Python (tra tre virgolette)
+codice_html_app = """
 <!doctype html>
 <html lang="it">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>KPI → Margini | MVP</title>
+  <title>KPI - Margini | MVP</title>
 
-  <!-- Tailwind (CDN for MVP demo) -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-  <!-- CSV Parser -->
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
-  <!-- XLSX Parser (SheetJS) -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.19.3/dist/xlsx.full.min.js"></script>
 
-  <!-- Charts -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
   <style>
@@ -67,14 +70,12 @@
 </head>
 
 <body class="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 text-slate-900">
-  <!-- ===================== App Shell ===================== -->
   <div id="app" class="max-w-7xl mx-auto px-4 py-6 lg:px-8">
-    <!-- Header -->
     <header class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
       <div class="flex items-center gap-3">
         <div class="h-10 w-10 rounded-2xl bg-slate-900 text-white grid place-items-center font-extrabold">KM</div>
         <div>
-          <div class="text-lg font-extrabold tracking-tight">KPI → Margini</div>
+          <div class="text-lg font-extrabold tracking-tight">KPI - Margini</div>
           <div class="text-xs text-slate-500">MVP demo client-side • pronto da deploy statico</div>
         </div>
       </div>
@@ -85,9 +86,7 @@
       </div>
     </header>
 
-    <!-- Main layout -->
     <div class="mt-6 grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
-      <!-- Sidebar -->
       <aside class="card h-fit sticky top-6">
         <div class="text-xs font-bold text-slate-500 uppercase tracking-wider">Workspace</div>
 
@@ -133,15 +132,13 @@
             <li>• <b>product</b> o service</li>
             <li>• <b>revenue</b></li>
             <li>• <b>cost</b></li>
-            <li>• <b>customer</b (opzionale)</li>
-            <li>• <b>channel</b (opzionale)</li>
+            <li>• <b>customer</b> (opzionale)</li>
+            <li>• <b>channel</b> (opzionale)</li>
           </ul>
         </div>
       </aside>
 
-      <!-- Content -->
       <main class="space-y-6">
-        <!-- Top status bar -->
         <div class="card">
           <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
@@ -155,7 +152,6 @@
           </div>
         </div>
 
-        <!-- ============ VIEW: IMPORT ============ -->
         <section id="view-import" class="view card hidden">
           <div class="flex items-center justify-between">
             <div>
@@ -230,7 +226,6 @@
           </div>
         </section>
 
-        <!-- ============ VIEW: DOCTOR ============ -->
         <section id="view-doctor" class="view card hidden">
           <div class="flex items-center justify-between">
             <div>
@@ -293,7 +288,6 @@
           </div>
         </section>
 
-        <!-- ============ VIEW: KPI ============ -->
         <section id="view-kpi" class="view card hidden">
           <div class="flex items-center justify-between">
             <div>
@@ -354,7 +348,6 @@
           </div>
         </section>
 
-        <!-- ============ VIEW: MARGINS ============ -->
         <section id="view-margins" class="view card hidden">
           <div class="flex items-center justify-between">
             <div>
@@ -369,7 +362,6 @@
             <div class="small-muted mt-1">Importa un file per analizzare i margini.</div>
           </div>
 
-          <!-- Paywall -->
           <div id="marginsPaywall" class="mt-6 hidden">
             <div class="rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-slate-50 p-6">
               <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -425,7 +417,6 @@
           </div>
         </section>
 
-        <!-- ============ VIEW: BILLING ============ -->
         <section id="view-billing" class="view card hidden">
           <div class="flex items-center justify-between">
             <div>
@@ -482,7 +473,6 @@
     </div>
   </div>
 
-  <!-- ===================== Logic ===================== -->
   <script>
     /***********************
      * Simple State (LocalStorage)
@@ -560,7 +550,7 @@
     function syncWorkspaceUI() {
       $("companyName").value = state.company;
       $("sectorSelect").value = state.sector;
-      $("workspaceTitle").textContent = state.company ? `${state.company}` : "Nessun workspace impostato";
+      $("workspaceTitle").textContent = state.company ? state.company : "Nessun workspace impostato";
       const sectorLabel = {
         generic: "Generico",
         services: "Servizi / Consulenza",
@@ -568,11 +558,11 @@
         ecommerce: "E-commerce"
       }[state.sector] || "Generico";
       $("workspaceSubtitle").textContent = state.company
-        ? `Settore: ${sectorLabel} • Piano: ${state.plan.toUpperCase()}`
+        ? "Settore: " + sectorLabel + " - Piano: " + state.plan.toUpperCase()
         : "Imposta azienda e settore per iniziare.";
 
       $("dataStatus").className = state.normRows?.length ? "pill-ok" : "pill-warn";
-      $("dataStatus").textContent = state.normRows?.length ? `Dataset attivo (${state.normRows.length} righe)` : "Nessun dataset";
+      $("dataStatus").textContent = state.normRows?.length ? "Dataset attivo (" + state.normRows.length + " righe)" : "Nessun dataset";
       renderPlanBadge();
     }
 
@@ -1254,3 +1244,7 @@
   </script>
 </body>
 </html>
+"""
+
+# Infine, diciamo a Streamlit di visualizzare questa stringa come HTML reale
+components.html(codice_html_app, height=1000, scrolling=True)
